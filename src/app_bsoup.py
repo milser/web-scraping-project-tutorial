@@ -41,4 +41,38 @@ if response:
 else: 
     print("not working")
 
-print(df)
+print(df.head())
+#Parte 5
+import sqlite3
+
+connection = sqlite3.connect("Tesla.db")
+print(connection)
+cursor = connection.cursor()
+#cursor.execute("""CREATE TABLE revenue (Date, Revenue)""")
+tesla_tuples = list(df.to_records(index = False))
+print(tesla_tuples[:5])
+#cursor.executemany("INSERT INTO revenue VALUES (?,?)", tesla_tuples)
+connection.commit()
+
+for row in cursor.execute("SELECT * FROM revenue"):
+    print(row)
+    
+#Parte 6
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Convert non-numeric values in "Revenue" column to NaN
+df["Revenue"] = pd.to_numeric(df["Revenue"], errors='coerce')
+
+# Drop rows with NaN values in "Revenue" column
+df.dropna(subset=["Revenue"], inplace=True)
+
+# Convert "Revenue" column to integer type
+df["Revenue"] = df["Revenue"].astype(int)
+
+# Plotting
+fig, axis = plt.subplots(figsize=(10, 5))
+sns.lineplot(data=df, x="Date", y="Revenue")
+plt.tight_layout()
+plt.show()
